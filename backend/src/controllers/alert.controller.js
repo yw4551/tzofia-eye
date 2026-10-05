@@ -1,5 +1,6 @@
 import {
     createAlert,
+    deleteAlert,
     getAllAlerts,
     getById,
 } from "../repositories/alert.repository.js";
@@ -83,4 +84,24 @@ export const createAlertService = async (req, res) => {
             message: err.message || "Initial server error",
         });
     }
+};
+
+export const deleteAlertService = async (req, res) => {
+    const { id } = req.params;
+
+    const alert = await deleteAlert(id);
+
+    if (!alert) {
+        return res.status(404).json({
+            success: false,
+            message: "Alert not found",
+        });
+    }
+
+    res.json({
+        success: true,
+        data: {
+            message: "Alert deleted successfully",
+        },
+    });
 };

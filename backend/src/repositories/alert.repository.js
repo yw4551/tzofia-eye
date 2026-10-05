@@ -15,4 +15,7 @@ export const createAlert = async (data) => {
     return alert;
 };
 
-
+export const deleteAlert = async (id) => {
+    const alert = await Alert.findByIdAndDelete(id);
+    return alert;
+};
