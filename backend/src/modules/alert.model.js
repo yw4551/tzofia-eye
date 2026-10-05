@@ -15,7 +15,7 @@ const AlertSchema = new mongoose.Schema(
             type: String,
             enum: ["low", "medium", "high", "critical"],
         },
-        area: {
+        arena: {
             type: String,
             enum: ["north", "south", "center"],
         },

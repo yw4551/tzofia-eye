@@ -9,3 +9,10 @@ export const getById = async (id) => {
     const alert = await Alert.findById(id);
     return alert;
 };
+
+export const createAlert = async (data) => {
+    const alert = await Alert.create(data);
+    return alert;
+};
+
+
