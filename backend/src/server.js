@@ -3,6 +3,7 @@ import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import connectDb from "./config/db.js";
+import alertRouter from "./routes/alert.route.js";
 
 const PORT = process.env.PORT || 3000;
 
@@ -19,6 +20,8 @@ app.use(express.json());
 app.get("/health", (req, res) => {
     res.send("Server is healthy");
 });
+
+app.use("/api/alerts", alertRouter);
 
 const startServer = async () => {
     try {
