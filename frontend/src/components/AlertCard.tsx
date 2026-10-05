@@ -4,9 +4,10 @@ import type { AlertResponseType } from "../types/alertTypes";
 interface AlertCardProps {
     alert: AlertResponseType;
     onDelete: (id: string) => void;
+    onUpdate: (id: string) => void;
 }
 
-function AlertCard({ alert, onDelete }: AlertCardProps) {
+function AlertCard({ alert, onDelete, onUpdate }: AlertCardProps) {
     return (
         <div>
             <h2>{alert.displayName}</h2>
@@ -16,6 +17,7 @@ function AlertCard({ alert, onDelete }: AlertCardProps) {
             <p>Arena: {alert.arena}</p>
 
             <Link to={`/alerts/${alert._id}`}>View</Link>
+            <button onClick={() => onUpdate(alert._id)}>Update</button>
             <button onClick={() => onDelete(alert._id)}>Delete</button>
         </div>
     );

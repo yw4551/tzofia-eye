@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { success } from "zod";
 import {
     createAlert,
     deleteAlert,
@@ -10,6 +10,7 @@ import {
     addAlertSchema,
     updateAlertSchema,
 } from "../validations/alert.validation.js";
+import mongoose from "mongoose";
 
 export const getAllAlertsService = async (req, res) => {
     try {
@@ -22,61 +23,50 @@ export const getAllAlertsService = async (req, res) => {
             },
         });
     } catch (err) {
-        throw err;
+        res.status(500).json({
+            success: false,
+            message: err.message || "Initial server error",
+        });
     }
 };
 
 export const getAlertByIdService = async (req, res) => {
-    const { id } = req.params;
+    try {
+        const { id } = req.params;
 
-    const alert = await getById(id);
+        if (!mongoose.isValidObjectId(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid object ID",
+            });
+        }
 
-    if (!alert) {
-        return res.status(404).json({
+        const alert = await getById(id);
+
+        if (!alert) {
+            return res.status(404).json({
+                success: false,
+                message: "Alert not found",
+            });
+        }
+
+        res.json({
+            success: true,
+            data: {
+                alert,
+            },
+        });
+    } catch (err) {
+        res.status(500).json({
             success: false,
-            message: "Alert not found",
+            message: err.message || "Initial server error",
         });
     }
-
-    res.json({
-        success: true,
-        data: {
-            alert,
-        },
-    });
 };
 
 export const createAlertService = async (req, res) => {
     try {
-        const { displayName, description, priority, arena, status, lon, lat } =
-            req.body;
-
-        if (
-            !displayName ||
-            !description ||
-            !priority ||
-            !arena ||
-            !status ||
-            !lon ||
-            !lat
-        ) {
-            return res.status(401).json({
-                success: false,
-                message: "Some property is missing",
-            });
-        }
-
-        const data = {
-            displayName,
-            description,
-            priority,
-            arena,
-            status,
-            lon,
-            lat,
-        };
-
-        const validatedData = addAlertSchema.parse(data);
+        const validatedData = addAlertSchema.parse(req.body);
         const alert = await createAlert(validatedData);
 
         res.status(201).json({
@@ -86,14 +76,6 @@ export const createAlertService = async (req, res) => {
             },
         });
     } catch (err) {
-        if (err instanceof z.ZodError) {
-            return res.status(401).json({
-                success: false,
-                message: "Validation errors",
-                errors: err.issues,
-            });
-        }
-
         res.status(500).json({
             success: false,
             message: err.message || "Initial server error",
@@ -102,31 +84,60 @@ export const createAlertService = async (req, res) => {
 };
 
 export const deleteAlertService = async (req, res) => {
-    const { id } = req.params;
+    try {
+        const { id } = req.params;
 
-    const alert = await deleteAlert(id);
+        if (!mongoose.isValidObjectId(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid object ID",
+            });
+        }
 
-    if (!alert) {
-        return res.status(404).json({
+        const alert = await deleteAlert(id);
+
+        if (!alert) {
+            return res.status(404).json({
+                success: false,
+                message: "Alert not found",
+            });
+        }
+
+        res.json({
+            success: true,
+            data: {
+                message: "Alert deleted successfully",
+            },
+        });
+    } catch (err) {
+        res.status(500).json({
             success: false,
-            message: "Alert not found",
+            message: err.message || "Initial server error",
         });
     }
-
-    res.json({
-        success: true,
-        data: {
-            message: "Alert deleted successfully",
-        },
-    });
 };
 
 export const updateAlertService = async (req, res) => {
     try {
-        const data = req.body;
+        const { id } = req.params;
 
-        const validatedData = updateAlertSchema.parse(data);
-        const alert = await updateAlert(validatedData);
+        if (!isValidId(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid alert ID",
+            });
+        }
+
+        const validatedData = updateAlertSchema.parse(req.body);
+
+        if (Object.keys(validatedData).length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "You must have at least one value to update",
+            });
+        }
+
+        const alert = await updateAlert(id, validatedData);
 
         res.status(201).json({
             success: true,
@@ -135,14 +146,6 @@ export const updateAlertService = async (req, res) => {
             },
         });
     } catch (err) {
-        if (err instanceof z.ZodError) {
-            return res.status(401).json({
-                success: false,
-                message: "Validation errors",
-                errors: err.issues,
-            });
-        }
-
         res.status(500).json({
             success: false,
             message: err.message || "Initial server error",

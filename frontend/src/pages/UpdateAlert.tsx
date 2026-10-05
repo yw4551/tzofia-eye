@@ -54,14 +54,13 @@ function UpdateAlert() {
                 </div>
                 <div>
                     <label htmlFor="description">Description</label>
-                    <input
-                        type="text"
+                    <textarea
                         id="description"
                         placeholder="Enter your description"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         required
-                    />
+                    ></textarea>
                 </div>
                 <div>
                     <label htmlFor="priority">Priority</label>
@@ -109,7 +108,7 @@ function UpdateAlert() {
                         type="number"
                         id="lon"
                         value={lon}
-                        onChange={(e) => setLon(e.target.value)}
+                        onChange={(e) => setLon(Number(e.target.value))}
                     />
                 </div>
                 <div>
@@ -118,10 +117,12 @@ function UpdateAlert() {
                         type="number"
                         id="lat"
                         value={lat}
-                        onChange={(e) => setLat(e.target.value)}
+                        onChange={(e) => setLat(Number(e.target.value))}
                     />
                 </div>
-                <button type="submit" onClick={() => handleSubmit}></button>
+                <button type="submit" onClick={() => handleSubmit}>
+                    Update
+                </button>
             </form>
         </main>
     );
