@@ -1,6 +1,6 @@
-type PriorityType = "low" | "medium" | "high" | "critical";
-type ArenaType = "north" | "south" | "center";
-type StatusType = "active" | "handled";
+export type PriorityType = "low" | "medium" | "high" | "critical";
+export type ArenaType = "north" | "south" | "center";
+export type StatusType = "active" | "handled";
 
 export interface AlertResponseType {
     _id: string;
