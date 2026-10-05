@@ -1,9 +1,15 @@
+import z from "zod";
 import {
     createAlert,
     deleteAlert,
     getAllAlerts,
     getById,
+    updateAlert,
 } from "../repositories/alert.repository.js";
+import {
+    addAlertSchema,
+    updateAlertSchema,
+} from "../validations/alert.validation.js";
 
 export const getAllAlertsService = async (req, res) => {
     try {
@@ -70,7 +76,8 @@ export const createAlertService = async (req, res) => {
             lat,
         };
 
-        const alert = await createAlert(data);
+        const validatedData = addAlertSchema.parse(data);
+        const alert = await createAlert(validatedData);
 
         res.status(201).json({
             success: true,
@@ -79,6 +86,14 @@ export const createAlertService = async (req, res) => {
             },
         });
     } catch (err) {
+        if (err instanceof z.ZodError) {
+            return res.status(401).json({
+                success: false,
+                message: "Validation errors",
+                errors: err.issues,
+            });
+        }
+
         res.status(500).json({
             success: false,
             message: err.message || "Initial server error",
@@ -104,4 +119,33 @@ export const deleteAlertService = async (req, res) => {
             message: "Alert deleted successfully",
         },
     });
+};
+
+export const updateAlertService = async (req, res) => {
+    try {
+        const data = req.body;
+
+        const validatedData = updateAlertSchema.parse(data);
+        const alert = await updateAlert(validatedData);
+
+        res.status(201).json({
+            success: true,
+            data: {
+                alert,
+            },
+        });
+    } catch (err) {
+        if (err instanceof z.ZodError) {
+            return res.status(401).json({
+                success: false,
+                message: "Validation errors",
+                errors: err.issues,
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: err.message || "Initial server error",
+        });
+    }
 };

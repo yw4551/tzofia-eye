@@ -19,3 +19,10 @@ export const deleteAlert = async (id) => {
     const alert = await Alert.findByIdAndDelete(id);
     return alert;
 };
+
+export const updateAlert = async (id, data) => {
+    const alert = await Alert.findByIdAndUpdate(id, data, {
+        returnDocument: "after",
+    });
+    return alert;
+};
