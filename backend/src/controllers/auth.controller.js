@@ -1,12 +1,14 @@
 import mongoose from "mongoose";
 import {
     createUser,
-    findUserByUsername,
+    getUserById,
     getAllUsers,
+    findUserByEmail,
 } from "../repositories/auth.repository.js";
-import { createUserSchema } from "../validations/auth.validation.js";
+import { createUserData } from "../validations/auth.validation.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { loginUserData } from "../validations/auth.validation.js";
 
 export const getAllUsersController = async (req, res) => {
     try {
@@ -37,7 +39,7 @@ export const getUserByIdController = async (req, res) => {
             });
         }
 
-        const user = await getUserByUsername(id);
+        const user = await getUserById(id);
 
         if (!user) {
             return res.status(404).json({
@@ -68,8 +70,8 @@ const createToken = (user) => {
 
 export const register = async (req, res) => {
     try {
-        const data = createUserSchema.parse(req.body);
-        const exists = findUserByUsername(data.email);
+        const data = createUserData.parse(req.body);
+        const exists = await findUserByEmail(data.email);
 
         if (exists) {
             return res.status(409).json({
@@ -82,7 +84,7 @@ export const register = async (req, res) => {
         const role =
             data.email.toLowerCase() === process.env.ADMIN_EMAIL
                 ? "admin"
-                : "user";
+                : "arena_user";
 
         const user = await createUser({
             username: data.username,
@@ -108,9 +110,72 @@ export const register = async (req, res) => {
             },
         });
     } catch (err) {
+        if (err.name === z.ZodError) {
+            return res.status(400).json({
+                success: false,
+                message: "Validation error",
+                errors: err.error.issues,
+            });
+        }
+
         res.status(500).json({
             success: false,
             message: err.message || "Initial server error",
+        });
+    }
+};
+
+export const login = async (req, res) => {
+    try {
+        const data = loginUserData.parse(req.body);
+        const user = await findUserByEmail(data.email);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        const validateUser = await bcrypt.compare(
+            data.password,
+            user.passwordHash,
+        );
+
+        if (!validateUser) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password",
+            });
+        }
+
+        const token = createToken(user);
+
+        res.json({
+            success: true,
+            data: {
+                token,
+                user: {
+                    id: user._id,
+                    username: user.username,
+                    email: user.email,
+                    role: user.role,
+                    assignedArena: user.assignedArena,
+                },
+            },
+        });
+    } catch (err) {
+        if (err.name === z.ZodError) {
+            return res.status(400).json({
+                success: false,
+                message: "Validation error",
+                errors: err.error.issues,
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: err.message || "Internal server error",
         });
     }
 };

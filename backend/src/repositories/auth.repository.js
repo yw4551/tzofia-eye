@@ -5,12 +5,12 @@ export const getAllUsers = async () => {
 };
 
 export const getUserById = async (id) => {
-    return await User.find({ id });
+    return await User.findById(id);
 };
 
-export const findUserByUsername = async (username) => {
-    return await User.findOne({username})
-}
+export const findUserByEmail = async (email) => {
+    return await User.findOne({ email });
+};
 
 export const createUser = async (data) => {
     return await User.create(data);

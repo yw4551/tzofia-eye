@@ -76,6 +76,14 @@ export const createAlertService = async (req, res) => {
             },
         });
     } catch (err) {
+        if (err.name === z.ZodError) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Validation error",
+                    errors: err.error.issues
+                })
+            }
+            
         res.status(500).json({
             success: false,
             message: err.message || "Initial server error",
@@ -146,6 +154,14 @@ export const updateAlertService = async (req, res) => {
             },
         });
     } catch (err) {
+        if (err.name === z.ZodError) {
+            return res.status(400).json({
+                success: false,
+                message: "Validation error",
+                errors: err.error.issues,
+            });
+        }
+
         res.status(500).json({
             success: false,
             message: err.message || "Initial server error",
