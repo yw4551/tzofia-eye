@@ -4,6 +4,7 @@ import helmet from "helmet";
 import cors from "cors";
 import connectDb from "./config/db.js";
 import alertRouter from "./routes/alert.route.js";
+import authServer from "./routes/auth.routes.js";
 
 const PORT = process.env.PORT || 3000;
 
@@ -12,7 +13,7 @@ const app = express();
 app.use(helmet());
 app.use(
     cors({
-        origin: process.env.CLIENT_URL,
+        origin: process.env.CLIENT_URL || "http://localhost:3000",
     }),
 );
 app.use(express.json());
@@ -22,6 +23,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api/alerts", alertRouter);
+app.use("/api/users", authServer);
 
 const startServer = async () => {
     try {

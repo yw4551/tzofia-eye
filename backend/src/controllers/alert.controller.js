@@ -25,7 +25,7 @@ export const getAllAlertsService = async (req, res) => {
     } catch (err) {
         res.status(500).json({
             success: false,
-            message: err.message || "Initial server error",
+            message: err.message || "Could not load alerts",
         });
     }
 };

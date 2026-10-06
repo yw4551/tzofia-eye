@@ -8,7 +8,7 @@ const AuthSchema = new mongoose.Schema(
             trim: true,
             unique: true,
         },
-        password: {
+        passwordHash: {
             type: String,
             required: true,
             trim: true,
