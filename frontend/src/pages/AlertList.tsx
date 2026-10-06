@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useAlertStore } from "../stores/alertStore";
 import { Link, useNavigate } from "react-router-dom";
 import AlertCard from "../components/AlertCard";
+import AlertsMap from "../components/AlertsMap";
 
 function AlertList() {
     const { alerts, loading, error, loadAlerts, removeAlert } = useAlertStore();
@@ -46,6 +47,16 @@ function AlertList() {
                     />
                 </div>
             ))}
+
+            <AlertsMap
+                alerts={alerts.map((alert) => ({
+                    id: alert._id,
+                    displayName: alert.displayName,
+                    priority: alert.priority,
+                    lon: alert.lon,
+                    lat: alert.lat,
+                }))}
+            />
         </main>
     );
 }
