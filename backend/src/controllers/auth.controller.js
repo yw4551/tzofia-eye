@@ -3,17 +3,27 @@ import {
     createUser,
     getUserById,
     getAllUsers,
-    findUserByEmail,
     deleteUser,
+    findUserByUsername,
 } from "../repositories/auth.repository.js";
 import { createUserData } from "../validations/auth.validation.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { loginUserData } from "../validations/auth.validation.js";
+import { z } from "zod";
 
 export const getAllUsersController = async (req, res) => {
     try {
-        const users = await getAllUsers();
+        const response = await getAllUsers();
+        const users = response.map((user) => {
+            return {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                assignedArena: user.assignedArena,
+            };
+        });
 
         res.json({
             success: true,
@@ -72,7 +82,7 @@ const createToken = (user) => {
 export const register = async (req, res) => {
     try {
         const data = createUserData.parse(req.body);
-        const exists = await findUserByEmail(data.email);
+        const exists = await findUserByUsername(data.username);
 
         if (exists) {
             return res.status(409).json({
@@ -129,7 +139,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const data = loginUserData.parse(req.body);
-        const user = await findUserByEmail(data.email);
+        const user = await findUserByUsername(data.username);
 
         if (!user) {
             return res.status(404).json({

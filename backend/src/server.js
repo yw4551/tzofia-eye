@@ -23,7 +23,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api/alerts", alertRouter);
-app.use("/api/users", authServer);
+app.use("/api/auth", authServer);
 
 const startServer = async () => {
     try {
