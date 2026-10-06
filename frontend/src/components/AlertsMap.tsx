@@ -97,7 +97,7 @@ export default function AlertsMap({
                 {sortedAlerts.map((alert) => {
                     const color = getColor(alert.priority);
                     const position: [number, number] = [alert.lat, alert.lon];
-                    const isCritical = alert.priority === "Critical";
+                    const isCritical = alert.priority === "critical";
 
                     return (
                         <span key={alert.id}>

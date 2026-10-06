@@ -179,3 +179,14 @@ export const login = async (req, res) => {
         });
     }
 };
+
+export const getMe = async (req, res) => {
+    const user = req.user;
+
+    res.json({
+        success: true,
+        data: {
+            user,
+        },
+    });
+};

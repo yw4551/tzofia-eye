@@ -33,10 +33,6 @@ export const useAlertStore = create<AlertStore>((set) => ({
                 error:
                     err instanceof Error ? err.message : "Something went wrong",
             });
-        } finally {
-            set({
-                loading: false,
-            });
         }
     },
     removeAlert: async (id: string) => {

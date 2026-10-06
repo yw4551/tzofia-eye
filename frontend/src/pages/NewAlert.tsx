@@ -10,8 +10,8 @@ function NewAlert() {
     const [priority, setPriority] = useState<PriorityType>("low");
     const [arena, setArena] = useState<ArenaType>("center");
     const [status, setStatus] = useState<StatusType>("active");
-    const [lon, setLon] = useState(0);
-    const [lat, setLat] = useState(0);
+    const [lon, setLon] = useState(34.7818);
+    const [lat, setLat] = useState(32.0853);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 

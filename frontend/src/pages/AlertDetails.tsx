@@ -6,7 +6,7 @@ import { getAlert } from "../api/alertApi";
 function AlertDetails() {
     const { id } = useParams();
     const [alert, setAlert] = useState<AlertResponseType | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const loadAlert = async () => {

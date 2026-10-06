@@ -19,8 +19,8 @@ function UpdateAlert() {
     const [priority, setPriority] = useState<PriorityType>("low");
     const [arena, setArena] = useState<ArenaType>("center");
     const [status, setStatus] = useState<StatusType>("active");
-    const [lon, setLon] = useState(32.0853);
-    const [lat, setLat] = useState(34.7818);
+    const [lon, setLon] = useState(34.7818);
+    const [lat, setLat] = useState(32.0853);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
