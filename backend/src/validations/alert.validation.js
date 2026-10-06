@@ -14,8 +14,8 @@ export const addAlertSchema = z.object({
     priority: z.enum(["low", "medium", "high", "critical"]),
     arena: z.enum(["north", "south", "center"]),
     status: z.enum(["active", "handled"]),
-    lon: z.number(),
-    lat: z.number(),
+    lon: z.number().min(34.2).max(35.95),
+    lat: z.number().min(29.4).max(33.4),
 });
 
 export const updateAlertSchema = z.object({
@@ -32,5 +32,8 @@ export const updateAlertSchema = z.object({
         .max(1000, "The description is too long")
         .optional(),
     priority: z.enum(["low", "medium", "high", "critical"]).optional(),
+    arena: z.enum(["north", "south", "center"]).optional(),
     status: z.enum(["active", "handled"]).optional(),
+    lon: z.number().min(34.2).max(35.95).optional(),
+    lat: z.number().min(29.4).max(33.4).optional(),
 });

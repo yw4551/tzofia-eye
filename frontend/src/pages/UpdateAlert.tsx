@@ -1,46 +1,96 @@
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type {
     ArenaType,
     StatusType,
     PriorityType,
     AlertResponseType,
 } from "../types/alertTypes";
-import { updateAlert } from "../api/alertApi";
+import { getAlert, updateAlert } from "../api/alertApi";
+import { useNavigate, useParams } from "react-router-dom";
 
 function UpdateAlert() {
+    const { id } = useParams();
+    const navigate = useNavigate();
+
     const [alert, setAlert] = useState<AlertResponseType | null>(null);
-    const [displayName, setDisplayName] = useState(alert?.displayName || "");
-    const [description, setDescription] = useState(alert?.description || "");
-    const [priority, setPriority] = useState<PriorityType>(
-        alert?.priority || "low",
-    );
-    const [arena, setArena] = useState<ArenaType>(alert?.arena || "center");
-    const [status, setStatus] = useState<StatusType>(alert?.status || "active");
-    const [lon, setLon] = useState(alert?.lon || 0);
-    const [lat, setLat] = useState(alert?.lat || 0);
+    const [displayName, setDisplayName] = useState("");
+    const [description, setDescription] = useState("");
+    const [priority, setPriority] = useState<PriorityType>("low");
+    const [arena, setArena] = useState<ArenaType>("center");
+    const [status, setStatus] = useState<StatusType>("active");
+    const [lon, setLon] = useState(32.0853);
+    const [lat, setLat] = useState(34.7818);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        if (!id) {
+            return;
+        }
+
+        const loadAlert = async () => {
+            try {
+                const data = await getAlert(id);
+                setAlert(data);
+                setDisplayName(data.displayName);
+                setDescription(data.description);
+                setPriority(data.priority);
+                setArena(data.arena);
+                setStatus(data.status);
+                setLon(data.lon);
+                setLat(data.lat);
+            } catch (err) {
+                setError(
+                    err instanceof Error ? err.message : "Could not load alert",
+                );
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        void loadAlert();
+    }, [id]);
 
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
 
-        const updatedAlert = {
-            displayName,
-            description,
-            priority,
-            arena,
-            status,
-            lon,
-            lat,
-        };
+        if (!alert) {
+            return;
+        }
 
-        if (!alert) return;
+        setError("");
 
-        await updateAlert(alert._id, updatedAlert);
+        try {
+            await updateAlert(alert._id, {
+                displayName: displayName.trim(),
+                description: description.trim(),
+                priority,
+                arena,
+                status,
+                lon: Number(lon),
+                lat: Number(lat),
+            });
+
+            navigate(`/alerts/${alert._id}`);
+        } catch (err) {
+            setError(
+                err instanceof Error ? err.message : "Could not update alert",
+            );
+        }
     };
+
+    {
+        loading && <p>Loading...</p>;
+    }
+    {
+        !alert && <p>{error}</p>;
+    }
+
     return (
         <main>
-            <h1>Create Alert</h1>
-            <form>
+            <h1>Update Alert</h1>
+            <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="name">Display name</label>
                     <input
@@ -103,26 +153,30 @@ function UpdateAlert() {
                     </select>
                 </div>
                 <div>
-                    <label htmlFor="lon">Longitude</label>
-                    <input
-                        type="number"
-                        id="lon"
-                        value={lon}
-                        onChange={(e) => setLon(Number(e.target.value))}
-                    />
-                </div>
-                <div>
                     <label htmlFor="lat">Latitude</label>
                     <input
                         type="number"
                         id="lat"
+                        step="any"
+                        min="29.4"
+                        max="33.4"
                         value={lat}
                         onChange={(e) => setLat(Number(e.target.value))}
                     />
                 </div>
-                <button type="submit" onClick={() => handleSubmit}>
-                    Update
-                </button>
+                <div>
+                    <label htmlFor="lon">Longitude</label>
+                    <input
+                        type="number"
+                        id="lon"
+                        step="any"
+                        min="34.2"
+                        max="35.95"
+                        value={lon}
+                        onChange={(e) => setLon(Number(e.target.value))}
+                    />
+                </div>
+                <button type="submit">Update</button>
             </form>
         </main>
     );

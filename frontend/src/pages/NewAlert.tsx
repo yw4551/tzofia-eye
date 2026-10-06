@@ -38,7 +38,7 @@ function NewAlert() {
     return (
         <main>
             <h1>Create Alert</h1>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="name">Display name</label>
                     <input
@@ -101,26 +101,30 @@ function NewAlert() {
                     </select>
                 </div>
                 <div>
-                    <label htmlFor="lon">Longitude</label>
-                    <input
-                        type="number"
-                        id="lon"
-                        value={lon}
-                        onChange={(e) => setLon(Number(e.target.value))}
-                    />
-                </div>
-                <div>
                     <label htmlFor="lat">Latitude</label>
                     <input
                         type="number"
                         id="lat"
+                        step="any"
+                        min="29.4"
+                        max="33.4"
                         value={lat}
                         onChange={(e) => setLat(Number(e.target.value))}
                     />
                 </div>
-                <button type="submit" onClick={() => handleSubmit}>
-                    Create
-                </button>
+                <div>
+                    <label htmlFor="lon">Longitude</label>
+                    <input
+                        type="number"
+                        id="lon"
+                        step="any"
+                        min="34.2"
+                        max="35.95"
+                        value={lon}
+                        onChange={(e) => setLon(Number(e.target.value))}
+                    />
+                </div>
+                <button type="submit">Create</button>
             </form>
 
             {error && <p>{error}</p>}

@@ -121,7 +121,7 @@ export const updateAlertService = async (req, res) => {
     try {
         const { id } = req.params;
 
-        if (!isValidId(id)) {
+        if (!mongoose.isValidObjectId(id)) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid alert ID",
@@ -139,7 +139,7 @@ export const updateAlertService = async (req, res) => {
 
         const alert = await updateAlert(id, validatedData);
 
-        res.status(201).json({
+        res.json({
             success: true,
             data: {
                 alert,

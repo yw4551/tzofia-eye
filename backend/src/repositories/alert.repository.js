@@ -22,7 +22,8 @@ export const deleteAlert = async (id) => {
 
 export const updateAlert = async (id, data) => {
     const alert = await Alert.findByIdAndUpdate(id, data, {
-        returnDocument: "after",
+        new: true,
+        runValidators: true,
     });
     return alert;
 };
