@@ -4,6 +4,7 @@ import {
     getUserById,
     getAllUsers,
     findUserByEmail,
+    deleteUser,
 } from "../repositories/auth.repository.js";
 import { createUserData } from "../validations/auth.validation.js";
 import bcrypt from "bcrypt";
@@ -189,4 +190,38 @@ export const getMe = async (req, res) => {
             user,
         },
     });
+};
+
+export const removeUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.isValidObjectId(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid user ID",
+            });
+        }
+
+        const user = await deleteUser(id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        res.json({
+            success: true,
+            data: {
+                message: "User deleted successfully",
+            },
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: "Initial server error",
+        });
+    }
 };

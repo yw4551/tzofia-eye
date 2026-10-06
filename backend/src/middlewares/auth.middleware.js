@@ -35,3 +35,16 @@ export const authenticate = async (req, res, next) => {
         });
     }
 };
+
+export const isAdmin = async (req, res, next) => {
+    const { role } = req.user.role;
+
+    if (role !== "admin") {
+        res.status(403).json({
+            success: false,
+            message: "Admin access required",
+        });
+    }
+
+    next();
+};

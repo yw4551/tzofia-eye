@@ -16,3 +16,6 @@ export const createUser = async (data) => {
     return await User.create(data);
 };
 
+export const deleteUser = async (id) => {
+    return await User.findByIdAndDelete(id);
+};
